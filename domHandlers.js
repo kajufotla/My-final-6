@@ -2,7 +2,7 @@
 // domHandlers.js - UI INTERACTION, EVENT LISTENERS & DROPDOWNS MANAGEMENT
 // ==========================================================================
 
-// 1. Sidebar Tab Switching Fix
+// 1. Sidebar Tab Switching Fix - Refactored to prevent inline style CSS conflicts
 export const initTabSwitching = (validateForm, updatePreview) => {
   document.querySelectorAll('.sticker-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -10,18 +10,19 @@ export const initTabSwitching = (validateForm, updatePreview) => {
       const targetId = targetBtn.getAttribute('data-target');
       if(!targetId) return;
 
+      // Reset all sidebar buttons
       document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('active'));
       
+      // Reset all content areas strictly using classes, NO inline styles
       document.querySelectorAll('.editor-tab-content').forEach(c => {
         c.classList.remove('active');
-        c.style.display = 'none'; 
       });
 
+      // Activate selected
       targetBtn.classList.add('active');
       const targetContent = document.getElementById(targetId);
       if(targetContent) {
         targetContent.classList.add('active');
-        targetContent.style.display = 'block'; 
       }
     });
   });
@@ -34,7 +35,7 @@ export const initTabSwitching = (validateForm, updatePreview) => {
   });
 
   document.getElementById('tabPreview')?.addEventListener('click', (e) => {
-    validateForm(); // Visually highlight missing inputs, but DO NOT block switching
+    validateForm(); 
     e.target.classList.add('active');
     document.getElementById('tabEditor')?.classList.remove('active');
     document.querySelector('.preview-section')?.classList.add('active-tab');
@@ -72,13 +73,11 @@ export const updateDropdowns = (savedClients, savedPayments, sanitizeHTML) => {
   }
 };
 
-// 4. Client Dropdown Change Interceptor (Fixed to dynamic check)
+// 4. Client Dropdown Change Interceptor
 export const initClientSelection = (savedClients, cache, updatePreview) => {
-  // Purانے ایونٹ لسنر کے ٹکراؤ سے بچنے کے لیے پہلے ریموو کرنا یا ڈاکیومنٹ لیول پر ہینڈل کرنا بہتر ہے
   const dropdown = document.getElementById('savedClientsDropdown');
   if (!dropdown) return;
 
-  // موجودہ لسنر کو صاف کر کے نیا لگانا تاکہ کلک/چینج ہمیشہ کام کرے
   dropdown.removeEventListener('change', dropdown._changeHandler);
   
   dropdown._changeHandler = (e) => {
@@ -98,7 +97,7 @@ export const initClientSelection = (savedClients, cache, updatePreview) => {
   dropdown.addEventListener('change', dropdown._changeHandler);
 };
 
-// 5. Payment Profile Selection Interceptor (Fixed to dynamic check)
+// 5. Payment Profile Selection Interceptor
 export const initPaymentSelection = (savedPayments, cache, updatePreview) => {
   const dropdown = document.getElementById('savedPaymentsDropdown');
   if (!dropdown) return;
