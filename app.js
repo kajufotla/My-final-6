@@ -9,7 +9,7 @@ import {
   initDarkMode, 
   updateDropdowns as domUpdateDropdowns, 
   initClientSelection, 
-  initPaymentSelection,
+  initPaymentSelection, 
   initModalClosers
 } from './domHandlers.js';
 
