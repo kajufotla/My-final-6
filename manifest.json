@@ -1,0 +1,21 @@
+{
+  "short_name": "InvoicePro",
+  "name": "E-X-P-R-T Enterprise Invoice Pro",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2300/2300181.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2300/2300181.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#1a56db",
+  "theme-color": "#1a56db",
+  "display": "standalone",
+  "orientation": "portrait"
+}
