@@ -1,5 +1,5 @@
 // ==========================================
-// SECURITY, SANITIZATION & VALIDATION UTILITIES
+// SECURITY, SANITIZATION & VALIDATION UTILITIES 
 // ==========================================
 export const sanitizeHTML = (str) => {
   if (typeof str !== 'string') return '';
