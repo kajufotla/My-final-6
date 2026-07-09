@@ -2,7 +2,7 @@
 // INVOICE CORE ENGINE (History, Dynamic Validations & Mutation Actions)
 // ==========================================================================
 
-// 1. UNDO / REDO HISTORY ENGINE
+// 1. UNDO / REDO HISTORY ENGINE 
 export const UndoRedoEngine = {
   history: [],
   index: -1,
