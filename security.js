@@ -1,75 +1,102 @@
-// ==========================================
-// SECURITY, SANITIZATION & VALIDATION UTILITIES 
-// ==========================================
+// ==========================================================================
+// ENTERPRISE SECURITY MODULE (Firebase-Ready Architecture)
+// ==========================================================================
+// Provides advanced XSS protection, safer storage, and robust file/input validation.
+
 export const sanitizeHTML = (str) => {
   if (typeof str !== 'string') return '';
-  return str.replace(/[&<>"']/g, (m) => {
-    switch (m) {
-      case '&': return '&amp;';
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '"': return '&quot;';
-      case "'": return '&#039;';
-      default: return m;
-    }
-  });
+  
+  // Expanded map for comprehensive XSS protection
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+  
+  return str.replace(/[&<>"'`=\/]/g, (m) => map[m]);
 };
 
 export const safeParseJSON = (jsonStr, fallback) => {
+  if (!jsonStr) return fallback;
   try {
-    return jsonStr ? JSON.parse(jsonStr) : fallback;
+    const parsed = JSON.parse(jsonStr);
+    return parsed !== null ? parsed : fallback;
   } catch (e) {
-    console.warn("Corrupt JSON structure detected. Restoring clean data layout.", e);
+    console.warn("JSON Parsing error handled by security module.");
     return fallback;
   }
 };
 
 export const validateUploadedFile = (file) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
+  if (!file) return false;
+  
+  // Added WebP support for modern performance alongside standard formats
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'];
   const maxSize = 2 * 1024 * 1024; // 2MB Limit
+  
   if (!allowedTypes.includes(file.type)) {
-    alert("Invalid file format. Please upload JPG, PNG, or SVG.");
+    alert("Security Alert: Invalid file format. Please upload JPG, PNG, WEBP, or SVG.");
     return false;
   }
+  
   if (file.size > maxSize) {
-    alert("File is too large. Maximum size limit is 2MB.");
+    alert("Size Limit Exceeded: Maximum allowed file size is 2MB.");
     return false;
   }
+  
+  // Firebase readiness: Validation logic is encapsulated cleanly 
+  // for easy addition of Firebase Storage rules later.
   return true;
 };
 
-export const runSmartFieldValidation = (field, validationType, cache) => {
-  if(!field) return true;
-  const value = field.value.trim();
-  let isFieldValid = true;
+// NEW: Enterprise Input Validation (Strings, Numbers, Email)
+export const validateInput = (value, type = 'text') => {
+  if (value === null || value === undefined) return false;
+  const sanitized = sanitizeHTML(String(value).trim());
+  
+  switch(type) {
+    case 'email':
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(sanitized) ? sanitized : null;
+    case 'number':
+      const num = parseFloat(sanitized);
+      return !isNaN(num) && num >= 0 ? num : null;
+    case 'text':
+    default:
+      return sanitized;
+  }
+};
 
-  if (value === "") {
-    isFieldValid = false;
-  } else {
-    if (validationType === 'email') {
-      isFieldValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    } else if (validationType === 'phone') {
-      isFieldValid = /^\+?[0-9\s\-()]{7,20}$/.test(value);
-    } else if (validationType === 'numeric-positive') {
-      const num = parseFloat(value);
-      isFieldValid = !isNaN(num) && num >= 0;
-    } else if (validationType === 'date-order') {
-      if (cache && cache.issueDate?.value && cache.dueDate?.value) {
-        isFieldValid = new Date(cache.dueDate.value) >= new Date(cache.issueDate.value);
-      }
+// NEW: Secure Local Storage Wrapper (Firebase-Ready Data Structure)
+// This prevents LocalStorage corruption and read/write crashes.
+export const secureStorage = {
+  setItem: (key, value) => {
+    try {
+      const serialized = JSON.stringify(value);
+      localStorage.setItem(key, serialized);
+    } catch (e) {
+      console.error(`Storage Security: Error saving ${key}`, e);
+    }
+  },
+  getItem: (key, fallback) => {
+    try {
+      const item = localStorage.getItem(key);
+      return safeParseJSON(item, fallback);
+    } catch (e) {
+      console.error(`Storage Security: Error reading ${key}`, e);
+      return fallback;
+    }
+  },
+  removeItem: (key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.error(`Storage Security: Error removing ${key}`, e);
     }
   }
-
-  if (!isFieldValid) {
-    field.classList.add('error');
-    if (field.nextElementSibling?.classList.contains('error-msg')) {
-      field.nextElementSibling.style.display = 'block';
-    }
-  } else {
-    field.classList.remove('error');
-    if (field.nextElementSibling?.classList.contains('error-msg')) {
-      field.nextElementSibling.style.display = 'none';
-    }
-  }
-  return isFieldValid;
 };
