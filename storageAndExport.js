@@ -17,11 +17,9 @@ export const handleImageUpload = (file, callback) => {
   reader.readAsDataURL(file);
 };
 
-// ========== FIXED PERFECT PDF EXPORT ==========
 export const executePdfPrint = (cache) => {
   if (!cache || !cache.receiptPaper) return;
   
-  // Use html2pdf for pixel-perfect standard if available
   if (typeof window.html2pdf !== 'undefined') {
     const element = cache.receiptPaper;
     const docName = document.getElementById('receiptNumber')?.value || 'Document';
@@ -34,7 +32,6 @@ export const executePdfPrint = (cache) => {
     };
     window.html2pdf().set(opt).from(element).save();
   } else {
-    // Fallback highly strict print CSS
     const printStyle = document.createElement('style');
     printStyle.id = 'pdf-runtime-print-css';
     printStyle.innerHTML = `
