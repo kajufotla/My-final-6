@@ -74,11 +74,9 @@ export const updateDropdowns = (savedClients, savedPayments, sanitizeHTML) => {
 
 // 4. Client Dropdown Change Interceptor (Fixed to dynamic check)
 export const initClientSelection = (savedClients, cache, updatePreview) => {
-  // Purانے ایونٹ لسنر کے ٹکراؤ سے بچنے کے لیے پہلے ریموو کرنا یا ڈاکیومنٹ لیول پر ہینڈل کرنا بہتر ہے
   const dropdown = document.getElementById('savedClientsDropdown');
   if (!dropdown) return;
 
-  // موجودہ لسنر کو صاف کر کے نیا لگانا تاکہ کلک/چینج ہمیشہ کام کرے
   dropdown.removeEventListener('change', dropdown._changeHandler);
   
   dropdown._changeHandler = (e) => {
