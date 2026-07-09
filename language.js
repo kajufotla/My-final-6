@@ -23,7 +23,7 @@ export const setLanguage = (lang) => {
         // Non-destructive text replacement to preserve SVGs
         let textReplaced = false;
         el.childNodes.forEach(node => {
-          if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
+          if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) { 
             node.nodeValue = ' ' + dict[key] + ' ';
             textReplaced = true;
           }
