@@ -13,12 +13,38 @@ export const renderList = (textId, listId, wrapId) => {
 export const updatePreview = (cache, state, sanitizeHTML) => {
   document.querySelectorAll('[data-bind]').forEach(el => {
     const key = el.getAttribute('data-bind');
-    if(['notes', 'terms', 'bankDetails', 'payUrl', 'payMethod'].includes(key)) return;
+    if(['notes', 'terms', 'bankDetails', 'payUrl', 'payMethod', 'poNumber', 'refNumber', 'status'].includes(key)) return;
     document.querySelectorAll(`[id^="prev${key.charAt(0).toUpperCase() + key.slice(1)}"]`).forEach(target => {
       if(el.tagName === 'TEXTAREA') target.textContent = el.value;
       else target.innerHTML = sanitizeHTML(el.value);
     });
   });
+
+  // ENTERPRISE UPGRADE: Int'l PO Number & Reference Number Dynamic Injection
+  if(cache.poNumber?.value) {
+    if(document.getElementById('prevPoNumber')) document.getElementById('prevPoNumber').textContent = cache.poNumber.value;
+    if(document.getElementById('wrapPoNumber')) document.getElementById('wrapPoNumber').style.display = 'block';
+  } else {
+    if(document.getElementById('wrapPoNumber')) document.getElementById('wrapPoNumber').style.display = 'none';
+  }
+
+  if(cache.refNumber?.value) {
+    if(document.getElementById('prevRefNumber')) document.getElementById('prevRefNumber').textContent = cache.refNumber.value;
+    if(document.getElementById('wrapRefNumber')) document.getElementById('wrapRefNumber').style.display = 'block';
+  } else {
+    if(document.getElementById('wrapRefNumber')) document.getElementById('wrapRefNumber').style.display = 'none';
+  }
+
+  // ENTERPRISE UPGRADE: Dynamic Document Status Watermark Implementation
+  const watermark = document.getElementById('invoiceWatermark');
+  if (watermark && cache.invoiceStatus) {
+      if (cache.invoiceStatus.value !== 'Draft') {
+          watermark.textContent = cache.invoiceStatus.value.toUpperCase();
+          watermark.style.display = 'block';
+      } else {
+          watermark.style.display = 'none';
+      }
+  }
 
   if(cache.prevTaxLabel && cache.taxLabelInput) cache.prevTaxLabel.textContent = cache.taxLabelInput.value || 'Tax';
   if(cache.prevBizContact) cache.prevBizContact.innerHTML = [sanitizeHTML(cache.bizPhone?.value), sanitizeHTML(cache.bizEmail?.value)].filter(Boolean).join(' | ');
@@ -70,13 +96,6 @@ export const updatePreview = (cache, state, sanitizeHTML) => {
       if(cache.rowTax) cache.rowTax.style.display = taxAmt > 0 ? 'flex' : 'none';
       if(cache.rowShipping) cache.rowShipping.style.display = s > 0 ? 'flex' : 'none';
       if(cache.prevTotal) cache.prevTotal.textContent = formatMoney(gTotal, cache.currencySelect?.value);
-  }
-
-  if (cache.watermarkSelect && cache.prevWatermark) {
-    if (cache.watermarkSelect.value) {
-      cache.prevWatermark.textContent = cache.watermarkSelect.value;
-      cache.prevWatermark.style.display = 'block';
-    } else cache.prevWatermark.style.display = 'none';
   }
 
   if (cache.dueDate?.value) {
