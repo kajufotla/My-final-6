@@ -7,7 +7,7 @@ export const renderList = (textId, listId, wrapId) => {
   if (!textEl || !wrap || !list) return;
   const text = textEl.value;
   if (text.trim()) { wrap.style.display = 'block'; list.innerHTML = text.replace(/\n/g, '<br>'); } 
-  else wrap.style.display = 'none';
+  else wrap.style.display = 'none'; 
 };
 
 export const updatePreview = (cache, state, sanitizeHTML) => {
