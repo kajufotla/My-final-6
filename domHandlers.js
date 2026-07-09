@@ -8,7 +8,7 @@ export const initTabSwitching = (validateForm, updatePreview) => {
     btn.addEventListener('click', (e) => {
       const targetBtn = e.currentTarget;
       const targetId = targetBtn.getAttribute('data-target');
-      if(!targetId) return;
+      if(!targetId) return; 
 
       document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('active'));
       
